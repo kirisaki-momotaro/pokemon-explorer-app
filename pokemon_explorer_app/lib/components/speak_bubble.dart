@@ -9,18 +9,16 @@ class SpeakBubble extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-        child: Container(
-          padding: const EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(33),
-            border: Border.all(color: const Color(0xFFB9BB9B), width: 2),
-          ),
-          child: _buildHighlightedText(),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+      child: Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(33),
+          border: Border.all(color: const Color(0xFFB9BB9B), width: 2),
         ),
+        child: _buildHighlightedText(),
       ),
     );
   }
