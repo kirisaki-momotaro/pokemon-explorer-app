@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'components/pokemon_type_grid.dart';
+import 'components/animated_background.dart';
+
+
 
 void main() {
+  
+  
   runApp(const MyApp());
 }
 
@@ -30,24 +36,12 @@ class MainScreen extends StatelessWidget {
         title: const Text("Pokemon Type Explorer"),
         backgroundColor: Colors.redAccent,
       ),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: () => debugPrint("Electric type button pressed!"),
-          style: ElevatedButton.styleFrom(
-            padding: const EdgeInsets.all(16),
-            backgroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(12),
-            ),
-            shadowColor: Colors.black54,
-            elevation: 5,
-          ),
-          child: Image(
-            width: 50,
-            height: 50,
-            image: AssetImage('assets/poke_type_icons/electric.png'), // Correct way for PNG
-          ),
-        ),
+      backgroundColor: Color(0xffc64444),
+      body: Stack(
+        children: [
+         //PokeballBackground(backgroundColor: 'red',),
+         PokemonTypeGrid()
+        ],
       ),
     );
   }
