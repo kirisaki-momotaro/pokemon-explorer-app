@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'components/pokemon_type_grid.dart';
 import 'components/animated_background.dart';
-
-
+import 'components/speak_bubble.dart';
 
 void main() {
-  
-  
   runApp(const MyApp());
 }
 
@@ -39,8 +36,23 @@ class MainScreen extends StatelessWidget {
       backgroundColor: Color(0xffc64444),
       body: Stack(
         children: [
-         //PokeballBackground(backgroundColor: 'red',),
-         PokemonTypeGrid()
+          //PokeballBackground(backgroundColor: 'red',),
+
+          Column(
+            children: [
+              Row(
+                children: [
+                  SizedBox(height: 20,width: 20,),
+                  SpeakBubble(
+                    bubbleText:
+                        "Click on a type icon to learn more about my pals Pika!!",
+                    highlightWords: ["type"],
+                  ),
+                ],
+              ),
+              PokemonTypeGrid(),
+            ],
+          )
         ],
       ),
     );
