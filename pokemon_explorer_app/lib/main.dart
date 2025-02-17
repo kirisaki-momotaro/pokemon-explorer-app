@@ -7,6 +7,7 @@ import 'dart:math';
 import 'components/pokemon_type_grid.dart';
 import 'components/speak_bubble.dart';
 import 'dart:math' as math;
+import 'components/pokedex_header.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
       title: 'Pokemon Type Explorer',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
@@ -41,12 +43,18 @@ class _MainScreenState extends State<MainScreen>
   bool isLoading = true;
   final int maxPokemon = 898; // Gen 1-8 Pokémon
   late AnimationController _controller;
-    List<String> types = [
-      'Fire', 'Fairy', 'Ghost',
-      'Grass', 'Dark', 'Steel',
-      'Water', 'Electric', 'Dragon',
-      'Psychic'
-    ];
+  List<String> types = [
+    'Fire',
+    'Fairy',
+    'Ghost',
+    'Grass',
+    'Dark',
+    'Steel',
+    'Water',
+    'Electric',
+    'Dragon',
+    'Psychic'
+  ];
   @override
   void initState() {
     super.initState();
@@ -89,24 +97,23 @@ class _MainScreenState extends State<MainScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Pokemon Type Explorer"),
-        backgroundColor: Colors.redAccent,
-      ),
+      
       backgroundColor: const Color(0xffc64444),
       body: Stack(
         children: [
           PokeballBackground(backgroundColor: 'red'),
           Column(
             children: [
+              PokedexHeader(
+                height: 100,
+                imageUrl: null,
+              ),
               Row(
-                
                 children: [
                   Expanded(
                     flex: 1,
                     child: Container(
                       alignment: Alignment.center,
-                      
                       child: isLoading
                           ? AnimatedBuilder(
                               animation: _controller,
@@ -123,7 +130,7 @@ class _MainScreenState extends State<MainScreen>
                             )
                           : Transform(
                               alignment: Alignment.center,
-                              transform: Matrix4.identity()..scale(-1.0, 1.0),
+                              transform: Matrix4.identity()..scale(-1.5, 1.5),
                               child: CachedNetworkImage(
                                 imageUrl: spriteUrl!,
                                 placeholder: (context, url) => const SizedBox(),
