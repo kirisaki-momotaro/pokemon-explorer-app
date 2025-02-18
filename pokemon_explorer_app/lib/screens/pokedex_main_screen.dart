@@ -8,6 +8,7 @@ import 'package:pokemon_explorer_app/components/pokemon_type_grid.dart';
 import 'package:pokemon_explorer_app/components/speak_bubble.dart';
 import 'package:pokemon_explorer_app/components/pokedex_header.dart';
 import 'dart:math' as math;
+import 'package:pokemon_explorer_app/components/pokeball_loading_indicator.dart';
 
 class PokedexMainScreen extends StatefulWidget {
   const PokedexMainScreen({super.key});
@@ -90,19 +91,7 @@ class _PokedexMainScreenState extends State<PokedexMainScreen>
                     child: Container(
                       alignment: Alignment.center,
                       child: isLoading
-                          ? AnimatedBuilder(
-                              animation: _controller,
-                              builder: (context, child) {
-                                return Transform.rotate(
-                                  angle: _controller.value * 2 * math.pi,
-                                  child: Image.asset(
-                                    'assets/pokeballs/pokeball-fire.png',
-                                    width: 100,
-                                    height: 100,
-                                  ),
-                                );
-                              },
-                            )
+                          ? PokeballLoadingIndicator()
                           : Transform(
                               alignment: Alignment.center,
                               transform: Matrix4.identity()..scale(-1.5, 1.5),
