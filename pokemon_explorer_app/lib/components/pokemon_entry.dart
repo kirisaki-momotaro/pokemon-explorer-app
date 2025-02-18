@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:pokemon_explorer_app/components/pokeball_loading_indicator.dart';
+import 'package:pokemon_explorer_app/utils/type_colors.dart';
 
 class PokemonEntry extends StatelessWidget {
   final String spriteUrl;
@@ -18,22 +19,11 @@ class PokemonEntry extends StatelessWidget {
     required this.onPressed,
   });
 
-  static const Map<String, Color> typeColors = {
-    'Fire': Color(0xFFE4613E),
-    'Fairy': Color(0xFFE18CE1),
-    'Ghost': Color(0xFF785279),
-    'Grass': Color(0xFF439837),
-    'Dark': Color(0xFF4F4747),
-    'Steel': Color(0xFF74B0CB),
-    'Water': Color(0xFF3099E1),
-    'Electric': Color(0xFFDFBC28),
-    'Dragon': Color(0xFF576FBC),
-    'Psychic': Color(0xFFE96C8C),
-  };
+
 
   @override
   Widget build(BuildContext context) {
-    final Color typeColor = typeColors[pokemonType] ?? Colors.grey;
+    final Color typeColor = TypeColors.getTypeColor(pokemonType);
     const Color infoColor = Color(0xFF4E4E4E);
     return ElevatedButton(
       onPressed: onPressed,
