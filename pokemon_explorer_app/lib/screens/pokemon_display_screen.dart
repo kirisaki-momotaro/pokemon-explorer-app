@@ -4,6 +4,8 @@ import 'package:pokemon_explorer_app/components/pokedex_screen_template.dart';
 import 'package:pokemon_explorer_app/components/pokemon_type_label.dart';
 import 'package:pokemon_explorer_app/components/speak_bubble.dart';
 import 'package:pokemon_explorer_app/components/pokemon_stat_display_board.dart';
+import 'package:pokemon_explorer_app/components/animated_background.dart';
+
 
 class PokemonDisplayScreen extends StatelessWidget {
   final Pokemon pokemon;
@@ -25,74 +27,79 @@ class PokemonDisplayScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return PokedexScreenTemplate(
       backgroundColor: Colors.white,
-      screenContent: Column(
+      screenContent: Stack(
         children: [
-          const SizedBox(height: 40),
-
-          // Pokmon Image
-          Image.network(
-            pokemon.spriteUrl,
-            width: 200,
-            height: 200,
-            fit: BoxFit.contain,
-          ),
-
-          const SizedBox(height: 40),
-
-          // Scrollable Info Section
-          Expanded(
-            child: Container(
-              decoration: BoxDecoration(
-                color: typeColors[pokemon.types[0]],
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(80),
-                  topRight: Radius.circular(80),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 8,
-                    offset: const Offset(0, -4),
+          
+          PokeballBackground(backgroundColor: 'white'),
+          Column(
+          children: [
+            const SizedBox(height: 40),
+        
+            // Pokmon Image
+            Image.network(
+              pokemon.spriteUrl,
+              width: 200,
+              height: 200,
+              fit: BoxFit.contain,
+            ),
+        
+            const SizedBox(height: 40),
+        
+            // Scrollable Info Section
+            Expanded(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: typeColors[pokemon.types[0]],
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(80),
+                    topRight: Radius.circular(80),
                   ),
-                ],
-              ),
-              padding: const EdgeInsets.all(20),
-              child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Pomon Name & Index
-                    Text(
-                      "${pokemon.name} #${pokemon.id}",
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.2),
+                      blurRadius: 8,
+                      offset: const Offset(0, -4),
                     ),
-
-                    const SizedBox(height: 10),
-
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      alignment: WrapAlignment.center,
-                      children: pokemon.types
-                          .map((type) => PokemonTypeLabel(type: type))
-                          .toList(),
-                    ),
-
-                    const SizedBox(height: 20),
-                    PokemonStatDisplayBoard(pokemon: pokemon),
-                    const SizedBox(height: 20),
-                    SpeakBubble(
-                        bubbleText: pokemon.description, highlightWords: [])
                   ],
+                ),
+                padding: const EdgeInsets.all(20),
+                child: SingleChildScrollView(                
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      // Pomon Name & Index
+                      Text(
+                        "${pokemon.name} #${pokemon.id}",
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                        ),
+                      ),
+        
+                      const SizedBox(height: 10),
+        
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        alignment: WrapAlignment.center,
+                        children: pokemon.types
+                            .map((type) => PokemonTypeLabel(type: type))
+                            .toList(),
+                      ),
+        
+                      const SizedBox(height: 20),
+                      PokemonStatDisplayBoard(pokemon: pokemon),
+                      const SizedBox(height: 20),
+                      SpeakBubble(
+                          bubbleText: pokemon.description, highlightWords: [])
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),]
       ),
     );
   }
