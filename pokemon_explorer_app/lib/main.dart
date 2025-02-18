@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokemon_explorer_app/screens/pokedex_main_screen.dart';
-import 'package:pokemon_explorer_app/screens/pokemon_select_screen.dart';
+
 
 void main() {
   runApp(const MyApp());
