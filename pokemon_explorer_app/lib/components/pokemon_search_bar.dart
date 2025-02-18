@@ -22,17 +22,13 @@ class PokemonSearchBar extends StatefulWidget {
 class _PokemonSearchBarState extends State<PokemonSearchBar> {
   final TextEditingController _controller = TextEditingController();
   final FocusNode _focusNode = FocusNode();
-
   OverlayEntry? _overlayEntry;
   final LayerLink _layerLink = LayerLink();
 
-  // All pokemon names of this type stored locally
-  List<String> _allPokemonNames = [];
-
-
-  List<String> _filteredNames = [];
-
-  bool _isFetchingAllNames = false;
+  //Stores names & IDs of pokemon of the specific type
+  List<Map<String, dynamic>> _allPokemonNamesAndIds = [];
+  List<Map<String, dynamic>> _filteredPokemon = [];
+  bool _isFetching = false;
 
   @override
   void initState() {
@@ -40,8 +36,9 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
     _focusNode.addListener(() {
       if (!_focusNode.hasFocus) _removeOverlay();
     });
-    // Fetch the list of all pokmon names once
-    _fetchAllPokemonNames();
+
+    // Fetch pokemon of this type
+    _fetchAllPokemonNamesOfType();
   }
 
   @override
@@ -52,74 +49,83 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
     super.dispose();
   }
 
-  // Fetch all pokemn names for partial matches
-  Future<void> _fetchAllPokemonNames() async {
-    setState(() => _isFetchingAllNames = true);
+  //Fetch all pokemon names & IDs belonging to the selected type
+  Future<void> _fetchAllPokemonNamesOfType() async {
+    setState(() => _isFetching = true);
 
-    const url = "https://pokeapi.co/api/v2/pokemon?limit=20000&offset=0";
+    final url = "https://pokeapi.co/api/v2/type/${widget.type.toLowerCase()}";
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
-        final results = data['results'] as List<dynamic>;
+        final pokemonList = data['pokemon'] as List<dynamic>;
 
-        // Extract all names
-        final names = results.map((e) => e['name'] as String).toList();
+        final extractedData = pokemonList.map((entry) {
+          final pokemonData = entry['pokemon'];
+          final urlParts = pokemonData['url'].split('/');
+          final id = int.tryParse(urlParts[urlParts.length - 2]) ?? 0;
+
+          return {
+            'name': pokemonData['name'],
+            'id': id,
+          };
+        }).toList();
 
         setState(() {
-          _allPokemonNames = names; // e.g., [bulbasaur, ivysaur, ...] pokemon names
+          _allPokemonNamesAndIds = extractedData;
         });
       }
     } catch (e) {
-      debugPrint("Error fetching all pokemon names: $e");
+      debugPrint("Error fetching Pokémon of type ${widget.type}: $e");
     } finally {
-      setState(() => _isFetchingAllNames = false);
+      setState(() => _isFetching = false);
     }
   }
 
-  /// On text change, check for matching pokemon
+  //filter pokemon based on search input
   void _onSearch(String query) async {
     if (query.isEmpty) {
       _removeOverlay();
       return;
     }
 
-    // If not loaded yet, fetch them
-    if (_allPokemonNames.isEmpty && !_isFetchingAllNames) {
-      await _fetchAllPokemonNames();
+    if (_allPokemonNamesAndIds.isEmpty && !_isFetching) {
+      await _fetchAllPokemonNamesOfType();
     }
 
-    // Filter names for partial match
-    final matches = _allPokemonNames
-        .where((name) => name.toLowerCase().contains(query.toLowerCase()))
+    //Filter names or IDs
+    final matches = _allPokemonNamesAndIds
+        .where((pokemon) =>
+            pokemon['name'].toLowerCase().contains(query.toLowerCase()) ||
+            pokemon['id'].toString() == query)
         .toList();
 
-    // Limit to 3 pokemon as item
-    final limited = matches.take(3).toList();
+    // Limit to 3 results
+    final limitedResults = matches.take(3).toList();
 
-    setState(() => _filteredNames = limited);
+    setState(() => _filteredPokemon = limitedResults);
 
-    if (limited.isNotEmpty) {
+    if (limitedResults.isNotEmpty) {
       _showOverlay();
     } else {
       _removeOverlay();
     }
   }
 
-  
-  Future<void> _selectName(String name) async {
+  //When selecting a pokemn
+  Future<void> _selectPokemon(Map<String, dynamic> pokemonData) async {
+    final name = pokemonData['name'];
     _controller.text = name;
     _removeOverlay();
     _focusNode.unfocus();
 
-    // Fetch full Pokémon data
     final pokemon = await _fetchPokemonData(name);
     if (pokemon == null) return;
 
-    // External callback if any
+    // If an external callback is provided, use it
     widget.onSelectPokemon?.call(pokemon);
 
-    // Or navigate to PokemonDisplayScreen
+    // Navigate to pokemon display screen
     Navigator.of(context).push(
       PageRouteBuilder(
         transitionDuration: const Duration(milliseconds: 400),
@@ -138,21 +144,21 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
     );
   }
 
-  // Fetch full Pokemon data (stats, sprite) , description
+  //Fetch full pokemon details (stats, sprite, description)
   Future<Pokemon?> _fetchPokemonData(String name) async {
-    final url = "https://pokeapi.co/api/v2/pokemon/${name.toLowerCase()}";
+    final url = "https://pokeapi.co/api/v2/pokemon/$name";
 
     try {
       final response = await http.get(Uri.parse(url));
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
-        final speciesUrl = data['species']['url'] as String;
-        final speciesResp = await http.get(Uri.parse(speciesUrl));
+        final speciesUrl = data['species']['url'];
+        final speciesResponse = await http.get(Uri.parse(speciesUrl));
+
         String description = "No description available.";
-        if (speciesResp.statusCode == 200) {
-          final speciesData = json.decode(speciesResp.body);
-          // Find first English flavor text
+        if (speciesResponse.statusCode == 200) {
+          final speciesData = json.decode(speciesResponse.body);
           for (var entry in speciesData['flavor_text_entries']) {
             if (entry['language']['name'] == 'en') {
               description = entry['flavor_text']
@@ -167,9 +173,7 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
           id: data['id'],
           name: data['name'],
           spriteUrl: data['sprites']['front_default'],
-          types: List<String>.from(
-            data['types'].map((t) => t['type']['name']),
-          ),
+          types: List<String>.from(data['types'].map((t) => t['type']['name'])),
           description: description,
           hp: data['stats'][0]['base_stat'],
           attack: data['stats'][1]['base_stat'],
@@ -177,19 +181,18 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
         );
       }
     } catch (e) {
-      debugPrint("Error fetching pokemon data: $e");
+      debugPrint("Error fetching Pokémon details: $e");
     }
     return null;
   }
 
-  /// Show the dropdown overlay
+  //Show dropdown overlay
   void _showOverlay() {
     _removeOverlay();
 
     _overlayEntry = OverlayEntry(
       builder: (context) => Stack(
         children: [
-          // Tapping outside dismisses
           Positioned.fill(
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
@@ -199,8 +202,6 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
               },
             ),
           ),
-
-          // The dropdown overlay
           Positioned(
             width: MediaQuery.of(context).size.width - 32,
             child: CompositedTransformFollower(
@@ -213,12 +214,12 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
                 child: ListView.builder(
                   padding: EdgeInsets.zero,
                   shrinkWrap: true,
-                  itemCount: _filteredNames.length,
+                  itemCount: _filteredPokemon.length,
                   itemBuilder: (context, index) {
-                    final name = _filteredNames[index];
+                    final pokemon = _filteredPokemon[index];
                     return ListTile(
-                      title: Text(name),
-                      onTap: () => _selectName(name),
+                      title: Text("${pokemon['name']} #${pokemon['id']}"),
+                      onTap: () => _selectPokemon(pokemon),
                     );
                   },
                 ),
@@ -231,7 +232,6 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
 
     Overlay.of(context).insert(_overlayEntry!);
   }
-
 
   void _removeOverlay() {
     _overlayEntry?.remove();
@@ -256,7 +256,7 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
             decoration: InputDecoration(
               filled: true,
               fillColor: typeColor,
-              hintText: "Search Pokemon (partial name) or ID...",
+              hintText: "Search Pokémon (name or ID)...",
               hintStyle: const TextStyle(color: Colors.white70),
               prefixIcon: const Icon(Icons.search, color: Colors.white),
               border: OutlineInputBorder(
