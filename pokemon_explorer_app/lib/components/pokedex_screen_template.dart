@@ -10,11 +10,13 @@ class PokedexScreenTemplate extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold( 
       backgroundColor: backgroundColor,     
-      body: Column(
-        children: [
-          const PokedexHeader(height: 100, imageUrl: null), 
-          Expanded(child: screenContent), 
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            const PokedexHeader(height: 100, imageUrl: null), 
+            Expanded(child: screenContent), 
+          ],
+        ),
       ),
     );
   }

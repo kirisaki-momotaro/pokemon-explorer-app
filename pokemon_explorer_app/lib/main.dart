@@ -3,6 +3,7 @@ import 'package:pokemon_explorer_app/screens/pokedex_main_screen.dart';
 
 
 void main() {
+  
   runApp(const MyApp());
 }
 
