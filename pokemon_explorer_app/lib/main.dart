@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       //home: const PokedexMainScreen(), 
-      home: PokemonSelectScreen(),
+      home: PokemonSelectScreen(pokemonType: 'Electric',),
     );
   }
 }
