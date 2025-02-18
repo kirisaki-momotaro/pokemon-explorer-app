@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokemon_explorer_app/screens/pokedex_main_screen.dart';
-import 'package:pokemon_explorer_app/screens/pokemon_select_screen.dart'; 
+import 'package:pokemon_explorer_app/screens/pokemon_select_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,10 +18,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
         useMaterial3: true,
       ),
-      initialRoute: '/', 
+      initialRoute: '/',
       routes: {
-        '/': (context) => const PokedexMainScreen(), 
-        '/pokemon_select': (context) => const PokemonSelectScreen(pokemonType: "Electric"), 
+        '/': (context) => const PokedexMainScreen(),
       },
     );
   }
