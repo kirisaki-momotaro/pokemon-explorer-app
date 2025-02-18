@@ -3,6 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:pokemon_explorer_app/components/animated_background.dart';
+import 'package:pokemon_explorer_app/components/pokedex_screen_template.dart';
 import 'package:pokemon_explorer_app/components/pokemon_type_grid.dart';
 import 'package:pokemon_explorer_app/components/speak_bubble.dart';
 import 'package:pokemon_explorer_app/components/pokedex_header.dart';
@@ -75,14 +76,13 @@ class _PokedexMainScreenState extends State<PokedexMainScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return PokedexScreenTemplate(
       backgroundColor: const Color(0xffc64444),
-      body: Stack(
+      screenContent: Stack(
         children: [
           PokeballBackground(backgroundColor: 'red'),
           Column(
-            children: [
-              PokedexHeader(height: 100, imageUrl: null),
+            children: [              
               Row(
                 children: [
                   Expanded(
