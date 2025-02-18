@@ -18,8 +18,11 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.yellow),
         useMaterial3: true,
       ),
-      //home: const PokedexMainScreen(), 
-      home: PokemonSelectScreen(pokemonType: 'Electric',),
+      initialRoute: '/', 
+      routes: {
+        '/': (context) => const PokedexMainScreen(), 
+        '/pokemon_select': (context) => const PokemonSelectScreen(pokemonType: "Electric"), 
+      },
     );
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokemon_explorer_app/components/pokemon_hint_bubble.dart';
-
+import 'package:pokemon_explorer_app/components/pokedex_header_button.dart';
 class PokedexHeader extends StatelessWidget {
   final double height;
   final String? imageUrl; // optional image for the big circle
@@ -32,28 +32,7 @@ class PokedexHeader extends StatelessWidget {
                 Positioned(
                   left: 10,
                   bottom: height * 0.1,
-                  child: Container(
-                    width: height * 0.85,
-                    height: height * 0.85,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      border: Border.all(color: Colors.black, width: 3),
-                      color: imageUrl == null
-                          ? const Color(0xFF8CF2F5)
-                          : Colors.transparent,
-                      image: imageUrl != null
-                          ? DecorationImage(
-                              image: NetworkImage(imageUrl!),
-                              fit: BoxFit.cover,
-                            )
-                          : null, // Default color if no image as input
-                    ),
-                    child: Stack(
-                      children: [
-                        if (imageUrl == null) _buildWhiteCircle(height),
-                      ],
-                    ),
-                  ),
+                  child: PokedexHeaderButton(size: height)
                 ),
             
                 // Ssmall green circle
@@ -87,21 +66,5 @@ class PokedexHeader extends StatelessWidget {
     );
   }
 
-  //Creates a white reflectin circle in the upper left part of the big circle
-  Widget _buildWhiteCircle(double parentSize) {
-    return Align(
-      alignment: Alignment.topLeft,
-      child: Padding(
-        padding: EdgeInsets.all(parentSize * 0.1),
-        child: Container(
-          width: parentSize * 0.25,
-          height: parentSize * 0.25,
-          decoration: const BoxDecoration(
-            shape: BoxShape.circle,
-            color: Colors.white,
-          ),
-        ),
-      ),
-    );
-  }
+ 
 }
