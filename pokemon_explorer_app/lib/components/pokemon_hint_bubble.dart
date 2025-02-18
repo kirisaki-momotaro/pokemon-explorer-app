@@ -10,7 +10,7 @@ class PokemonHintBubble extends StatefulWidget {
     super.key,
     required this.hints,
     this.textSpeed = const Duration(milliseconds: 50),
-    this.fontFamily = "PokemonClassic", //pokemon red-blue font
+    this.fontFamily = "PokemonClassic", // Pokémon Red/Blue font
   });
 
   @override
@@ -21,7 +21,7 @@ class _PokemonHintBubbleState extends State<PokemonHintBubble> {
   int currentHintIndex = 0;
   String displayedText = "";
   int charIndex = 0;
-  late Timer _timer;
+  Timer? _timer; // Make the timer nullable
 
   @override
   void initState() {
@@ -32,7 +32,11 @@ class _PokemonHintBubbleState extends State<PokemonHintBubble> {
   void _startTextAnimation() {
     displayedText = "";
     charIndex = 0;
+    _timer?.cancel(); // Cancel any existing timer before starting a new one
+
     _timer = Timer.periodic(widget.textSpeed, (timer) {
+      if (!mounted) return; // Prevent updating state if widget is disposed
+
       if (charIndex < widget.hints[currentHintIndex].length) {
         setState(() {
           displayedText += widget.hints[currentHintIndex][charIndex];
@@ -40,29 +44,25 @@ class _PokemonHintBubbleState extends State<PokemonHintBubble> {
         });
       } else {
         timer.cancel();
-        Future.delayed(const Duration(seconds: 2), _nextHint);
+        _timer = Timer(const Duration(seconds: 2), _nextHint);
       }
     });
   }
 
   void _nextHint() {
-    if (currentHintIndex < widget.hints.length - 1) {
-      setState(() {
-        currentHintIndex++;
-        displayedText = "";
-      });
-    } else {
-      setState(() {
-        currentHintIndex = 0;
-        displayedText = "";
-      });
-    }
+    if (!mounted) return; // Ensure widget is still in the tree
+
+    setState(() {
+      currentHintIndex = (currentHintIndex + 1) % widget.hints.length;
+      displayedText = "";
+    });
+
     _startTextAnimation();
   }
 
   @override
   void dispose() {
-    _timer.cancel();
+    _timer?.cancel(); // Ensure timer is properly canceled
     super.dispose();
   }
 
