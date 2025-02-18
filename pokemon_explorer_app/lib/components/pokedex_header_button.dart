@@ -1,36 +1,46 @@
 import 'package:flutter/material.dart';
 
 class PokedexHeaderButton extends StatelessWidget {
-  final double size; 
+  final double size;
   const PokedexHeaderButton({super.key, required this.size});
 
   @override
   Widget build(BuildContext context) {
     final String? currentRoute = ModalRoute.of(context)?.settings.name;
-    final bool showBackButton = currentRoute != '/'; 
+    final bool showBackButton = currentRoute != '/';
 
     return Container(
-      width: size * 0.85, 
+      width: size * 0.85,
       height: size * 0.85,
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(color: Colors.black, width: 3),
-        color: const Color(0xFF8CF2F5), 
+        color: const Color(0xFF8CF2F5),
       ),
       child: Stack(
         alignment: Alignment.center,
         children: [
-          _buildWhiteCircle(size), 
-          if (showBackButton) 
-            IconButton(
-              icon: const Icon(Icons.arrow_back, size: 30, color: Colors.black),
-              onPressed: () => Navigator.pop(context),
+          
+          if (showBackButton)
+            SizedBox.expand(
+              child: Material(
+                color: Colors.transparent, // Prevents background color
+                child: InkWell(
+                  borderRadius:
+                      BorderRadius.circular(size * 0.5), // Keep circular shape
+                  onTap: () => Navigator.pop(context),
+                  child: Center(
+                    child:
+                        Icon(Icons.arrow_back, size: size * 0.5, color: Colors.black),
+                  ),
+                ),
+              ),
             ),
+            _buildWhiteCircle(size),
         ],
       ),
     );
   }
-
 
   Widget _buildWhiteCircle(double parentSize) {
     return Align(
