@@ -6,28 +6,8 @@ import 'package:pokemon_explorer_app/components/pokeball_loading_indicator.dart'
 import 'package:pokemon_explorer_app/components/pokedex_screen_template.dart';
 import 'package:pokemon_explorer_app/components/pokemon_entry.dart';
 import 'package:pokemon_explorer_app/components/speak_bubble.dart';
-
-class Pokemon {
-  final int id;
-  final String name;
-  final String spriteUrl;
-  final List<String> types;
-  final String description;
-  final int hp;
-  final int attack;
-  final int defense;
-
-  Pokemon({
-    required this.id,
-    required this.name,
-    required this.spriteUrl,
-    required this.types,
-    required this.description,
-    required this.hp,
-    required this.attack,
-    required this.defense,
-  });
-}
+import 'package:pokemon_explorer_app/screens/pokemon_display_screen.dart';
+import 'package:pokemon_explorer_app/classes/pokemon.dart';
 
 class PokemonSelectScreen extends StatefulWidget {
   final String pokemonType; // Takes type as an argument
@@ -199,6 +179,33 @@ class _PokemonSelectScreenState extends State<PokemonSelectScreen> {
                                       pokemonName: _pokemonList[index].name,
                                       pokemonIndex: _pokemonList[index].id,
                                       pokemonType: widget.pokemonType,
+                                      onPressed: () {
+                                        Navigator.of(context).push(
+                                          PageRouteBuilder(
+                                            transitionDuration: const Duration(
+                                                milliseconds: 400),
+                                            pageBuilder: (context, animation,
+                                                    secondaryAnimation) =>
+                                                PokemonDisplayScreen(
+                                                    pokemon:
+                                                        _pokemonList[index]),
+                                            transitionsBuilder: (context,
+                                                animation,
+                                                secondaryAnimation,
+                                                child) {
+                                              return SlideTransition(
+                                                position: Tween<Offset>(
+                                                  begin: const Offset(1,
+                                                      0), // Starts from right
+                                                  end: Offset
+                                                      .zero, // Ends at normal position
+                                                ).animate(animation),
+                                                child: child,
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      },
                                     ),
                                   ),
                                 ),

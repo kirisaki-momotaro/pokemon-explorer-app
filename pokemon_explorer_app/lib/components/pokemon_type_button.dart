@@ -31,15 +31,15 @@ class PokemonTypeButton extends StatelessWidget {
           Navigator.of(context).push(
             PageRouteBuilder(
               transitionDuration:
-                  const Duration(milliseconds: 400), // ✅ Smooth animation
+                  const Duration(milliseconds: 400), 
               pageBuilder: (context, animation, secondaryAnimation) =>
                   PokemonSelectScreen(pokemonType: type),
               transitionsBuilder:
                   (context, animation, secondaryAnimation, child) {
                 return SlideTransition(
                   position: Tween<Offset>(
-                    begin: const Offset(1, 0), // ✅ Start from the right
-                    end: Offset.zero, // ✅ Move to normal position
+                    begin: const Offset(1, 0), 
+                    end: Offset.zero, 
                   ).animate(animation),
                   child: child,
                 );

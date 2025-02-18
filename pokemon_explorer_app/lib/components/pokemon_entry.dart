@@ -7,6 +7,7 @@ class PokemonEntry extends StatelessWidget {
   final String pokemonName;
   final int pokemonIndex;
   final String pokemonType;
+  final VoidCallback onPressed;
 
   const PokemonEntry({
     super.key,
@@ -14,6 +15,7 @@ class PokemonEntry extends StatelessWidget {
     required this.pokemonName,
     required this.pokemonIndex,
     required this.pokemonType,
+    required this.onPressed,
   });
 
   static const Map<String, Color> typeColors = {
@@ -34,7 +36,7 @@ class PokemonEntry extends StatelessWidget {
     final Color typeColor = typeColors[pokemonType] ?? Colors.grey;
     const Color infoColor = Color(0xFF4E4E4E);
     return ElevatedButton(
-      onPressed: () => debugPrint("button pressed!"),
+      onPressed: onPressed,
      style: ElevatedButton.styleFrom(
           padding: EdgeInsets.zero,
           backgroundColor: Colors.white,
