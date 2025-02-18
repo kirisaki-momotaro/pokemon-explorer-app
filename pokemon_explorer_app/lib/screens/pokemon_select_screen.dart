@@ -8,9 +8,10 @@ import 'package:pokemon_explorer_app/components/pokemon_entry.dart';
 import 'package:pokemon_explorer_app/components/speak_bubble.dart';
 import 'package:pokemon_explorer_app/screens/pokemon_display_screen.dart';
 import 'package:pokemon_explorer_app/classes/pokemon.dart';
+import 'package:pokemon_explorer_app/components/pokemon_search_bar.dart';
 
 class PokemonSelectScreen extends StatefulWidget {
-  final String pokemonType; // Takes type as an argument
+  final String pokemonType;
 
   const PokemonSelectScreen({super.key, required this.pokemonType});
 
@@ -124,6 +125,7 @@ class _PokemonSelectScreenState extends State<PokemonSelectScreen> {
       screenContent: Stack(
         children: [
           PokeballBackground(backgroundColor: 'black'),
+          
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -131,9 +133,8 @@ class _PokemonSelectScreenState extends State<PokemonSelectScreen> {
                 height: 350,
                 child: _pokemonList.isEmpty
                     ? const Center(
-                        child: PokeballLoadingIndicator(
-                        size: 200,
-                      )) // Show pokeball loading indicator initially
+                        child: PokeballLoadingIndicator(size: 200),
+                      ) // Show pokeball loading indicator initially
                     : ListWheelScrollView.useDelegate(
                         controller: _scrollController,
                         physics: _isLoading
@@ -153,9 +154,7 @@ class _PokemonSelectScreenState extends State<PokemonSelectScreen> {
                           builder: (context, index) {
                             if (index >= _pokemonList.length) {
                               return const Center(
-                                  child: PokeballLoadingIndicator(
-                                size: 50,
-                              ));
+                                  child: PokeballLoadingIndicator(size: 50));
                             }
 
                             double distanceFromCenter =
@@ -195,10 +194,8 @@ class _PokemonSelectScreenState extends State<PokemonSelectScreen> {
                                                 child) {
                                               return SlideTransition(
                                                 position: Tween<Offset>(
-                                                  begin: const Offset(1,
-                                                      0), // Starts from right
-                                                  end: Offset
-                                                      .zero, // Ends at normal position
+                                                  begin: const Offset(1, 0),
+                                                  end: Offset.zero,
                                                 ).animate(animation),
                                                 child: child,
                                               );
@@ -220,9 +217,22 @@ class _PokemonSelectScreenState extends State<PokemonSelectScreen> {
                 SpeakBubble(
                   bubbleText: _pokemonList[_currentIndex].description,
                   highlightWords: [],
-                )
+                ),
+                
             ],
           ),
+            Positioned(
+      top: 16,
+      left: 16,
+      right: 16,
+      child: PokemonSearchBar(        
+        type: widget.pokemonType,  // The chosen Pokémon type
+        onSelectPokemon: (selectedPokemon) {
+          // If you want to navigate externally or do extra logic here:
+          debugPrint("Selected Pokémon: ${selectedPokemon.name}");
+        },
+      ),
+    ),
         ],
       ),
     );
