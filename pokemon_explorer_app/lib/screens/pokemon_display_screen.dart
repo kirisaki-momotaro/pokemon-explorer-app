@@ -38,6 +38,7 @@ class PokemonDisplayScreen extends StatelessWidget {
             Expanded(
               child: Container(
                 decoration: BoxDecoration(
+                  border: Border.all(color: const Color(0xFFB9BB9B), width: 2),
                   color: TypeColors.getTypeColor(pokemon.types[0]),
                   borderRadius: const BorderRadius.only(
                     topLeft: Radius.circular(80),
