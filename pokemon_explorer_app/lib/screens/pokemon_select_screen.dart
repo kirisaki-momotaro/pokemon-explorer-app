@@ -39,7 +39,8 @@ class PokemonSelectScreen extends StatefulWidget {
 }
 
 class _PokemonSelectScreenState extends State<PokemonSelectScreen> {
-  final FixedExtentScrollController _scrollController = FixedExtentScrollController();
+  final FixedExtentScrollController _scrollController =
+      FixedExtentScrollController();
   final List<Pokemon> _pokemonList = [];
   int _currentIndex = 0;
   int _offset = 0;
@@ -54,81 +55,85 @@ class _PokemonSelectScreenState extends State<PokemonSelectScreen> {
   }
 
   void _handleScroll() {
-    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 50 &&
-        !_isLoading) {
+    if (!_isLoading &&
+        _scrollController.selectedItem == _pokemonList.length - 1) {
       _fetchPokemon();
     }
   }
 
   Future<void> _fetchPokemon() async {
-  setState(() {
-    _isLoading = true;
-  });
+    setState(() {
+      _isLoading = true;
+    });
 
-  final url = "https://pokeapi.co/api/v2/type/${widget.pokemonType.toLowerCase()}";
+    final url =
+        "https://pokeapi.co/api/v2/type/${widget.pokemonType.toLowerCase()}";
 
-  try {
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      List<dynamic> pokemonEntries = data['pokemon'];
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        List<dynamic> pokemonEntries = data['pokemon'];
 
-      final List<Pokemon> newPokemon = [];
+        final List<Pokemon> newPokemon = [];
 
-      for (var entry in pokemonEntries.skip(_offset).take(_limit)) {
-        int id = int.parse(entry['pokemon']['url'].split('/').reversed.elementAt(1));
+        for (var entry in pokemonEntries.skip(_offset).take(_limit)) {
+          int id = int.parse(
+              entry['pokemon']['url'].split('/').reversed.elementAt(1));
 
-        // fech description 
-        String description = await _fetchPokemonDescription(id);
+          // fech description
+          String description = await _fetchPokemonDescription(id);
 
-        newPokemon.add(Pokemon(
-          id: id,
-          name: entry['pokemon']['name'],
-          spriteUrl: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
-          types: [widget.pokemonType],
-          description: description, 
-          hp: (50 + id % 50).toInt(),
-          attack: (50 + id % 50).toInt(),
-          defense: (50 + id % 50).toInt(),
-        ));
+          newPokemon.add(Pokemon(
+            id: id,
+            name: entry['pokemon']['name'],
+            spriteUrl:
+                "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
+            types: [widget.pokemonType],
+            description: description,
+            hp: (50 + id % 50).toInt(),
+            attack: (50 + id % 50).toInt(),
+            defense: (50 + id % 50).toInt(),
+          ));
+        }
+
+        setState(() {
+          _pokemonList.addAll(newPokemon);
+          _offset += _limit;
+          _isLoading = false;
+        });
       }
-
+    } catch (e) {
+      print("Error fetching Pokémon: $e");
       setState(() {
-        _pokemonList.addAll(newPokemon);
-        _offset += _limit;
         _isLoading = false;
       });
     }
-  } catch (e) {
-    print("Error fetching Pokémon: $e");
-    setState(() {
-      _isLoading = false;
-    });
   }
-}
 
-Future<String> _fetchPokemonDescription(int pokemonId) async {
-  final url = "https://pokeapi.co/api/v2/pokemon-species/$pokemonId/";
+  Future<String> _fetchPokemonDescription(int pokemonId) async {
+    final url = "https://pokeapi.co/api/v2/pokemon-species/$pokemonId/";
 
-  try {
-    final response = await http.get(Uri.parse(url));
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+    try {
+      final response = await http.get(Uri.parse(url));
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
 
-      // Extract the first english flavor text entry
-      for (var entry in data['flavor_text_entries']) {
-        if (entry['language']['name'] == 'en') {
-          return entry['flavor_text'].replaceAll("\n", " ").replaceAll("\f", " ");
+        // Extract the first english flavor text entry
+        for (var entry in data['flavor_text_entries']) {
+          if (entry['language']['name'] == 'en') {
+            return entry['flavor_text']
+                .replaceAll("\n", " ")
+                .replaceAll("\f", " ");
+          }
         }
       }
+    } catch (e) {
+      print("Error fetching Pokémon description: $e");
     }
-  } catch (e) {
-    print("Error fetching Pokémon description: $e");
+
+    return "No description available.";
   }
-
-  return "No description available.";
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -145,10 +150,15 @@ Future<String> _fetchPokemonDescription(int pokemonId) async {
               SizedBox(
                 height: 350,
                 child: _pokemonList.isEmpty
-                    ? const Center(child: PokeballLoadingIndicator(size: 200,)) // Show pokeball loading indicator initially
+                    ? const Center(
+                        child: PokeballLoadingIndicator(
+                        size: 200,
+                      )) // Show pokeball loading indicator initially
                     : ListWheelScrollView.useDelegate(
                         controller: _scrollController,
-                        physics: const FixedExtentScrollPhysics(),
+                        physics: _isLoading
+                            ? const NeverScrollableScrollPhysics()
+                            : const FixedExtentScrollPhysics(),
                         itemExtent: 60,
                         perspective: 0.002,
                         diameterRatio: 2.5,
@@ -158,18 +168,26 @@ Future<String> _fetchPokemonDescription(int pokemonId) async {
                           });
                         },
                         childDelegate: ListWheelChildBuilderDelegate(
-                          childCount: _pokemonList.length + (_isLoading ? 1 : 0),
+                          childCount:
+                              _pokemonList.length + (_isLoading ? 1 : 0),
                           builder: (context, index) {
                             if (index >= _pokemonList.length) {
-                              return const Center(child: PokeballLoadingIndicator(size: 50,));
+                              return const Center(
+                                  child: PokeballLoadingIndicator(
+                                size: 50,
+                              ));
                             }
 
-                            double distanceFromCenter = (_currentIndex - index).abs().toDouble();
-                            double opacity = (1.0 - (distanceFromCenter * 0.3)).clamp(0.4, 1.0);
-                            double scale = (1.2 - distanceFromCenter * 0.2).clamp(0.9, 1.2);
+                            double distanceFromCenter =
+                                (_currentIndex - index).abs().toDouble();
+                            double opacity = (1.0 - (distanceFromCenter * 0.3))
+                                .clamp(0.4, 1.0);
+                            double scale = (1.2 - distanceFromCenter * 0.2)
+                                .clamp(0.9, 1.2);
 
                             return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 16),
                               child: Opacity(
                                 opacity: opacity,
                                 child: Transform.scale(
