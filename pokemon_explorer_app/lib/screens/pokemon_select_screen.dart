@@ -85,7 +85,7 @@ class _PokemonSelectScreenState extends State<PokemonSelectScreen> {
         });
       }
     } catch (e) {
-      print("Error fetching Pokémon: $e");
+      debugPrint("Error fetching Pokémon: $e");
       setState(() {
         _isLoading = false;
       });
@@ -110,10 +110,10 @@ class _PokemonSelectScreenState extends State<PokemonSelectScreen> {
         }
       }
     } catch (e) {
-      print("Error fetching Pokémon description: $e");
+      debugPrint("Error fetching Pokémon description: $e");
     }
 
-    return "No description available.";
+    return "Team Rocket Stole this Pokemon's Data, Our Ranger Team Currently Working on it.";
   }
 
   @override

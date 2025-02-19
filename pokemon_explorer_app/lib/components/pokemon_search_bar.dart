@@ -113,7 +113,7 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
   }
 
   //When selecting a pokemn
-  Future<void> _selectPokemon(Map<String, dynamic> pokemonData) async {
+  Future<void> _selectPokemon(Map<String, dynamic> pokemonData) async {    
     final name = pokemonData['name'];
     _controller.text = name;
     _removeOverlay();
@@ -124,7 +124,7 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
 
     // If an external callback is provided, use it
     widget.onSelectPokemon?.call(pokemon);
-
+    
     // Navigate to pokemon display screen
     Navigator.of(context).push(
       PageRouteBuilder(
