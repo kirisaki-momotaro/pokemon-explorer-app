@@ -19,89 +19,92 @@ class PokemonEntry extends StatelessWidget {
     required this.onPressed,
   });
 
-
-
   @override
   Widget build(BuildContext context) {
     final Color typeColor = TypeColors.getTypeColor(pokemonType);
     const Color infoColor = Color(0xFF4E4E4E);
+
     return ElevatedButton(
       onPressed: onPressed,
-     style: ElevatedButton.styleFrom(
-          padding: EdgeInsets.zero,
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          shadowColor: Colors.black54,
-          elevation: 5,
-          
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.zero,
+        backgroundColor: Colors.white,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
         ),
+        shadowColor: Colors.black54,
+        elevation: 5,
+      ),
       child: Container(
         height: 60, // Base height
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
         ),
-        child: Row(
+        child: Stack(
           children: [
-            // Left Section (Pokemon Sprite)
-            Container(
-              width: 60,
-              decoration: BoxDecoration(
-                color: typeColor,
-                borderRadius: const BorderRadius.only(
-                  topLeft: Radius.circular(8),
-                  bottomLeft: Radius.circular(8),
+            Row(
+              children: [
+                Container(
+                  width: 60,
+                  decoration: BoxDecoration(
+                    color: typeColor,
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      bottomLeft: Radius.circular(8),
+                    ),
+                  ),
                 ),
-              ),
-              child: Padding(
+                SizedBox(
+                  width: 50,
+                  height: 60,
+                  child: CustomPaint(
+                    painter: DiagonalSplitPainter(typeColor, infoColor),
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    decoration: const BoxDecoration(
+                      color: infoColor,
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(8),
+                        bottomRight: Radius.circular(8),
+                      ),
+                    ),
+                    child: Center(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        child: Text(
+                          "$pokemonName #$pokemonIndex",
+                          style: const TextStyle(
+                            fontFamily: 'OpenSans',
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Positioned(
+              left: 10,
+              top: 0,
+              bottom: 0,
+              child: Container(
+                width: 60,
                 padding: const EdgeInsets.all(8.0),
                 child: Transform.scale(
                   scale: 2.4,
                   child: CachedNetworkImage(
                     imageUrl: spriteUrl,
                     placeholder: (context, url) =>
-                        const PokeballLoadingIndicator(size: 60,),
+                        const PokeballLoadingIndicator(size: 60),
                     errorWidget: (context, url, error) =>
                         const Icon(Icons.error, color: Colors.red),
                     fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ),
-
-            // Center Section (Diagonal Split Rectangle)
-            SizedBox(
-              width: 50,
-              height: 60,
-              child: CustomPaint(
-                painter: DiagonalSplitPainter(typeColor, infoColor),
-              ),
-            ),
-
-            // Right Section (pokemon Info)
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                decoration: const BoxDecoration(
-                  color: infoColor,
-                  borderRadius: BorderRadius.only(
-                    topRight: Radius.circular(8),
-                    bottomRight: Radius.circular(8),
-                  ),
-                ),
-                child: Center(
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Text(
-                      "$pokemonName #$pokemonIndex",
-                      style: const TextStyle(
-                        fontFamily: 'OpenSans',
-                        fontWeight: FontWeight.w600,
-                        fontSize: 18,
-                        color: Colors.white,
-                      ),
-                    ),
                   ),
                 ),
               ),
