@@ -51,8 +51,11 @@ class _PokedexMainScreenState extends State<PokedexMainScreen>
     super.dispose();
   }
 
-  Future<void> fetchRandomPokemon(BuildContext context) async {
-    final spriteUrl = await ApiService.fetchRandomPokemon(context, 1000);
+Future<void> fetchRandomPokemon(BuildContext context) async {
+  setState(() => isLoading = true);
+
+  while (true) { 
+    final spriteUrl = await ApiService.fetchRandomPokemon(context, maxPokemon);
 
     if (spriteUrl != null) {
       setState(() {
@@ -60,8 +63,13 @@ class _PokedexMainScreenState extends State<PokedexMainScreen>
         isLoading = false;
         _controller.stop();
       });
+      return; 
+    } else {
+      debugPrint("Retrying fetchRandomPokemon after 3 seconds...");
+      await Future.delayed(const Duration(seconds: 3)); 
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
