@@ -1,5 +1,22 @@
-# Pokemon Explorer App
+# Pokémon Explorer App 🎮📱
 
+**Pokémon Explorer App** is a mobile application that allows users to explore Pokémon based on their types using data from the **PokéAPI**. The app provides an intuitive interface for filtering, searching, and viewing detailed information about Pokémon.
+
+## 🚀 Features
+- **Type Selection & Search**: Users can select one of **10 Pokémon types** (Fire, Water, Grass, Electric, Dragon, Psychic, Ghost, Dark, Steel, Fairy) and search for Pokémon by name within the selected type.
+- **Pokémon List Display**: Shows a paginated list of Pokémon from the selected type, initially displaying **10 Pokémon**, with an option to **load more**.
+- **Pokémon Details**: Displays Pokémon **name, image, and key stats (HP, Attack, Defense)** in an easy-to-read format.
+
+## 🔗 API & Technology Stack
+- **PokéAPI**: Used to fetch Pokémon data dynamically.
+- **Flutter + Dio**: For fast & efficient API handling and UI responsiveness.
+- **State Management**: Efficient state updates ensure smooth interactions.
+
+# App Demo
+
+![App Demo](app_demo.gif)
+
+# How to Run
 This guide provides step-by-step instructions to run the **Pokemon Explorer App** on an **Android** device.
 
 ## Prerequisites
