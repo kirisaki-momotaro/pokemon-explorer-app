@@ -4,7 +4,8 @@ import 'package:pokemon_explorer_app/components/pokedex_header.dart';
 class PokedexScreenTemplate extends StatelessWidget {
   final Widget screenContent; 
   final Color backgroundColor;
-  const PokedexScreenTemplate({super.key, required this.screenContent,required this.backgroundColor});
+  final List<String> hints;
+  const PokedexScreenTemplate({super.key, required this.screenContent,required this.backgroundColor, required this.hints});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,7 @@ class PokedexScreenTemplate extends StatelessWidget {
       body: SafeArea(
         child: Column(
           children: [
-            const PokedexHeader(height: 100, imageUrl: null), 
+            PokedexHeader(height: 100, hints: hints), 
             Expanded(child: screenContent), 
           ],
         ),

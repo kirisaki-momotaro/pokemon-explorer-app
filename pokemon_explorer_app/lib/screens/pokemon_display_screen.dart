@@ -90,7 +90,7 @@ class PokemonDisplayScreen extends StatelessWidget {
             ),
           ],
         ),]
-      ),
+      ), hints: ['Hope you are Having a Great Time', 'Nice Pokémon Huh?', 'Hope you are Not Going to Marry it or Sth.'],
     );
   }
 }

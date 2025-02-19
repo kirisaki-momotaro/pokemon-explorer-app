@@ -234,7 +234,7 @@ class _PokemonSelectScreenState extends State<PokemonSelectScreen> {
       ),
     ),
         ],
-      ),
+      ), hints: ['Tap on a Pokémon to Learn More', 'Tap on the Search Bar to Search', 'I\'n super sleepy','Miss being a Kid...','Pokémon are Soooooo Cool!!'],
     );
   }
 }

@@ -122,7 +122,7 @@ class _PokedexMainScreenState extends State<PokedexMainScreen>
             ],
           ),
         ],
-      ),
+      ), hints: ['Welcome to Pokémon Explorer!', 'Choose a Pokémon Type to Search', 'hey, Dude.. Just Press a Button'],
     );
   }
 }

@@ -3,9 +3,9 @@ import 'package:pokemon_explorer_app/components/pokemon_hint_bubble.dart';
 import 'package:pokemon_explorer_app/components/pokedex_header_button.dart';
 class PokedexHeader extends StatelessWidget {
   final double height;
-  final String? imageUrl; // optional image for the big circle
+  final List<String> hints;
 
-  const PokedexHeader({super.key, this.height = 80, this.imageUrl});
+  const PokedexHeader({super.key, this.height = 80, required this.hints});
 
   @override
   Widget build(BuildContext context) {
@@ -53,12 +53,9 @@ class PokedexHeader extends StatelessWidget {
             ),
           ),
           Expanded(
+            flex: 2,
             child: PokemonHintBubble(
-              hints: [
-                "Welcome to the world of Pokémon!",
-                "Cool Stuff await you",
-                "Plizzz Hire meeeeee...",
-              ],
+              hints: hints
             ),
           ),
         ],
