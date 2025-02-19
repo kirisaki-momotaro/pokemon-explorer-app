@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:pokemon_explorer_app/utils/type_colors.dart';
 import 'package:pokemon_explorer_app/classes/pokemon.dart';
 import 'package:pokemon_explorer_app/screens/pokemon_display_screen.dart';
-
+import 'package:pokemon_explorer_app/api_service.dart';
 class PokemonSearchBar extends StatefulWidget {
   final String type;
   final Function(Pokemon)? onSelectPokemon;
@@ -48,36 +46,13 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
 
   //Fetch all pokemon names & IDs belonging to the selected type
   Future<void> _fetchAllPokemonNamesOfType() async {
-    setState(() => _isFetching = true);
+  setState(() => _isFetching = true);
 
-    final url = "https://pokeapi.co/api/v2/type/${widget.type.toLowerCase()}";
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        final pokemonList = data['pokemon'] as List<dynamic>;
+  _allPokemonNamesAndIds = await ApiService.fetchAllPokemonNamesOfType(context, widget.type);
 
-        final extractedData = pokemonList.map((entry) {
-          final pokemonData = entry['pokemon'];
-          final urlParts = pokemonData['url'].split('/');
-          final id = int.tryParse(urlParts[urlParts.length - 2]) ?? 0;
+  setState(() => _isFetching = false);
+}
 
-          return {
-            'name': pokemonData['name'],
-            'id': id,
-          };
-        }).toList();
-
-        setState(() {
-          _allPokemonNamesAndIds = extractedData;
-        });
-      }
-    } catch (e) {
-      debugPrint("Error fetching Pokémon of type ${widget.type}: $e");
-    } finally {
-      setState(() => _isFetching = false);
-    }
-  }
 
   //filter pokemon based on search input
   void _onSearch(String query) async {
@@ -142,46 +117,10 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
   }
 
   //Fetch full pokemon details (stats, sprite, description)
-  Future<Pokemon?> _fetchPokemonData(String name) async {
-    final url = "https://pokeapi.co/api/v2/pokemon/$name";
+ Future<Pokemon?> _fetchPokemonData(String name) async {
+  return await ApiService.fetchPokemonData(context, name);
+}
 
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-
-        final speciesUrl = data['species']['url'];
-        final speciesResponse = await http.get(Uri.parse(speciesUrl));
-
-        String description = "No description available.";
-        if (speciesResponse.statusCode == 200) {
-          final speciesData = json.decode(speciesResponse.body);
-          for (var entry in speciesData['flavor_text_entries']) {
-            if (entry['language']['name'] == 'en') {
-              description = entry['flavor_text']
-                  .replaceAll('\n', ' ')
-                  .replaceAll('\f', ' ');
-              break;
-            }
-          }
-        }
-
-        return Pokemon(
-          id: data['id'],
-          name: data['name'],
-          spriteUrl: data['sprites']['front_default'],
-          types: List<String>.from(data['types'].map((t) => t['type']['name'])),
-          description: description,
-          hp: data['stats'][0]['base_stat'],
-          attack: data['stats'][1]['base_stat'],
-          defense: data['stats'][2]['base_stat'],
-        );
-      }
-    } catch (e) {
-      debugPrint("Error fetching Pokémon details: $e");
-    }
-    return null;
-  }
 
   //Show dropdown overlay
   void _showOverlay() {

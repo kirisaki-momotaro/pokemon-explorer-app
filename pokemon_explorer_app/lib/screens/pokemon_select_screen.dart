@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:pokemon_explorer_app/components/animated_background.dart';
 import 'package:pokemon_explorer_app/components/pokeball_loading_indicator.dart';
 import 'package:pokemon_explorer_app/components/pokedex_screen_template.dart';
@@ -9,7 +7,7 @@ import 'package:pokemon_explorer_app/components/speak_bubble.dart';
 import 'package:pokemon_explorer_app/screens/pokemon_display_screen.dart';
 import 'package:pokemon_explorer_app/classes/pokemon.dart';
 import 'package:pokemon_explorer_app/components/pokemon_search_bar.dart';
-
+import 'package:pokemon_explorer_app/api_service.dart';
 class PokemonSelectScreen extends StatefulWidget {
   final String pokemonType;
 
@@ -31,90 +29,37 @@ class _PokemonSelectScreenState extends State<PokemonSelectScreen> {
   @override
   void initState() {
     super.initState();
-    _fetchPokemon();
+    _fetchPokemon(context);
     _scrollController.addListener(_handleScroll);
   }
 
   void _handleScroll() {
     if (!_isLoading &&
         _scrollController.selectedItem == _pokemonList.length - 1) {
-      _fetchPokemon();
+      _fetchPokemon(context);
     }
   }
 
-  Future<void> _fetchPokemon() async {
-    setState(() {
-      _isLoading = true;
-    });
 
-    final url =
-        "https://pokeapi.co/api/v2/type/${widget.pokemonType.toLowerCase()}";
+Future<void> _fetchPokemon(BuildContext context) async {
+  setState(() {
+    _isLoading = true;
+  });
 
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        List<dynamic> pokemonEntries = data['pokemon'];
+  List<Pokemon> newPokemon = await ApiService.fetchPokemonByType(
+    context,
+    widget.pokemonType,
+    _offset,
+    _limit,
+  );
 
-        final List<Pokemon> newPokemon = [];
+  setState(() {
+    _pokemonList.addAll(newPokemon);
+    _offset += _limit;
+    _isLoading = false;
+  });
+}
 
-        for (var entry in pokemonEntries.skip(_offset).take(_limit)) {
-          int id = int.parse(
-              entry['pokemon']['url'].split('/').reversed.elementAt(1));
-
-          // fech description
-          String description = await _fetchPokemonDescription(id);
-
-          newPokemon.add(Pokemon(
-            id: id,
-            name: entry['pokemon']['name'],
-            spriteUrl:
-                "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$id.png",
-            types: [widget.pokemonType],
-            description: description,
-            hp: (50 + id % 50).toInt(),
-            attack: (50 + id % 50).toInt(),
-            defense: (50 + id % 50).toInt(),
-          ));
-        }
-
-        setState(() {
-          _pokemonList.addAll(newPokemon);
-          _offset += _limit;
-          _isLoading = false;
-        });
-      }
-    } catch (e) {
-      debugPrint("Error fetching Pokémon: $e");
-      setState(() {
-        _isLoading = false;
-      });
-    }
-  }
-
-  Future<String> _fetchPokemonDescription(int pokemonId) async {
-    final url = "https://pokeapi.co/api/v2/pokemon-species/$pokemonId/";
-
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-
-        // Extract the first english flavor text entry
-        for (var entry in data['flavor_text_entries']) {
-          if (entry['language']['name'] == 'en') {
-            return entry['flavor_text']
-                .replaceAll("\n", " ")
-                .replaceAll("\f", " ");
-          }
-        }
-      }
-    } catch (e) {
-      debugPrint("Error fetching Pokémon description: $e");
-    }
-
-    return "Team Rocket Stole this Pokemon's Data, Our Ranger Team Currently Working on it.";
-  }
 
   @override
   Widget build(BuildContext context) {

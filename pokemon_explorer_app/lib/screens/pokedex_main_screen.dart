@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:pokemon_explorer_app/components/animated_background.dart';
 import 'package:pokemon_explorer_app/components/pokedex_screen_template.dart';
 import 'package:pokemon_explorer_app/components/pokemon_type_grid.dart';
 import 'package:pokemon_explorer_app/components/speak_bubble.dart';
-import 'dart:math' as math;
+
 import 'package:pokemon_explorer_app/components/pokeball_loading_indicator.dart';
+import 'package:pokemon_explorer_app/api_service.dart';
 
 class PokedexMainScreen extends StatefulWidget {
   const PokedexMainScreen({super.key});
@@ -38,7 +38,7 @@ class _PokedexMainScreenState extends State<PokedexMainScreen>
   @override
   void initState() {
     super.initState();
-    fetchRandomPokemon();
+    fetchRandomPokemon(context);
     _controller = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
@@ -51,23 +51,12 @@ class _PokedexMainScreenState extends State<PokedexMainScreen>
     super.dispose();
   }
 
-  Future<void> fetchRandomPokemon() async {
-    final randomId = math.Random().nextInt(maxPokemon) + 1;
-    final url = 'https://pokeapi.co/api/v2/pokemon/$randomId';
+  Future<void> fetchRandomPokemon(BuildContext context) async {
+    final spriteUrl = await ApiService.fetchRandomPokemon(context, 1000);
 
-    try {
-      final response = await http.get(Uri.parse(url));
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        setState(() {
-          spriteUrl = data['sprites']['front_default'];
-          isLoading = false;
-          _controller.stop();
-        });
-      }
-    } catch (e) {
-      debugPrint("Error fetching Pokémon: $e");
+    if (spriteUrl != null) {
       setState(() {
+        this.spriteUrl = spriteUrl;
         isLoading = false;
         _controller.stop();
       });
@@ -82,7 +71,7 @@ class _PokedexMainScreenState extends State<PokedexMainScreen>
         children: [
           PokeballBackground(backgroundColor: 'red'),
           Column(
-            children: [              
+            children: [
               Row(
                 children: [
                   Expanded(
@@ -121,7 +110,12 @@ class _PokedexMainScreenState extends State<PokedexMainScreen>
             ],
           ),
         ],
-      ), hints: ['Welcome to Pokémon Explorer!', 'Choose a Pokémon Type to Search', 'hey, Dude.. Just Press a Button'],
+      ),
+      hints: [
+        'Welcome to Pokémon Explorer!',
+        'Choose a Pokémon Type to Search',
+        'hey, Dude.. Just Press a Button'
+      ],
     );
   }
 }
