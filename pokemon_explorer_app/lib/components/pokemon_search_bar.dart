@@ -20,8 +20,7 @@ class PokemonSearchBar extends StatefulWidget {
 }
 
 class _PokemonSearchBarState extends State<PokemonSearchBar> {
-  final TextEditingController _controller = TextEditingController();
-  final FocusNode _focusNode = FocusNode();
+  final TextEditingController _controller = TextEditingController();  
   OverlayEntry? _overlayEntry;
   final LayerLink _layerLink = LayerLink();
 
@@ -33,9 +32,7 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
   @override
   void initState() {
     super.initState();
-    _focusNode.addListener(() {
-      if (!_focusNode.hasFocus) _removeOverlay();
-    });
+   
 
     // Fetch pokemon of this type
     _fetchAllPokemonNamesOfType();
@@ -44,7 +41,7 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
   @override
   void dispose() {
     _controller.dispose();
-    _focusNode.dispose();
+    
     _removeOverlay();
     super.dispose();
   }
@@ -117,7 +114,7 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
     final name = pokemonData['name'];
     _controller.text = name;
     _removeOverlay();
-    _focusNode.unfocus();
+    
 
     final pokemon = await _fetchPokemonData(name);
     if (pokemon == null) return;
@@ -197,7 +194,7 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
             child: GestureDetector(
               behavior: HitTestBehavior.translucent,
               onTap: () {
-                _focusNode.unfocus();
+                
                 _removeOverlay();
               },
             ),
@@ -251,7 +248,7 @@ class _PokemonSearchBarState extends State<PokemonSearchBar> {
           borderRadius: BorderRadius.circular(20),
           child: TextField(
             controller: _controller,
-            focusNode: _focusNode,
+            
             onChanged: _onSearch,
             decoration: InputDecoration(
               filled: true,

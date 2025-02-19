@@ -73,7 +73,7 @@ class _HPBarState extends State<HPBar> with TickerProviderStateMixin {
         ),
 
         Transform.translate(
-          offset: const Offset(-7, -15),
+          offset: const Offset(-7, -10),
           child: Row(
             children: [
               Stack(
