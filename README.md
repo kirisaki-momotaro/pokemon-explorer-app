@@ -17,7 +17,7 @@ Before running the app, ensure you have the following installed:
 ### 1. Clone the Repository
 Open a terminal and run:
 ```sh
-git clone https://github.com/your-repository/pokemon-explorer-app.git
+git clone https://github.com/kirisaki-momotaro/pokemon-explorer-app.git
 cd pokemon-explorer-app
 ```
 
