@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokemon_explorer_app/classes/pokemon.dart';
+import 'package:pokemon_explorer_app/components/hp_bar.dart';
 
 class PokemonStatDisplayBoard extends StatelessWidget {
   final Pokemon pokemon;
@@ -30,13 +31,14 @@ class PokemonStatDisplayBoard extends StatelessWidget {
             decoration:  BoxDecoration(
               color: Color(0xFFB9BB9B),             
               borderRadius: BorderRadius.only(
-                bottomRight: Radius.circular(150), // Curved bottom-right corner
+                bottomRight: Radius.circular(150),
+                topRight: Radius.circular(150) // Curved bottom-right corner
               ),
               
             ),
             padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
             child: const Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Text(
                   "・HP",
@@ -73,18 +75,13 @@ class PokemonStatDisplayBoard extends StatelessWidget {
             child: Padding(
               padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,                
                 children: [
-                  Text(
-                    pokemon.hp.toString(),
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
+                  HPBar( maxHP: pokemon.hp), 
+
+                
+                  Transform.translate(offset: Offset(0, -10),
+                  child: Column(crossAxisAlignment: CrossAxisAlignment.center,children: [Text(
                     pokemon.attack.toString(),
                     style: const TextStyle(
                       fontSize: 20,
@@ -100,7 +97,9 @@ class PokemonStatDisplayBoard extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
-                  ),
+                  ),],),
+                  )
+                  
                 ],
               ),
             ),
