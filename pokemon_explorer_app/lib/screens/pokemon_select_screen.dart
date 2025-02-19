@@ -120,121 +120,175 @@ class _PokemonSelectScreenState extends State<PokemonSelectScreen> {
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
-    return PokedexScreenTemplate(
-      backgroundColor: Colors.black,
-      screenContent: Stack(
-        children: [
-          PokeballBackground(backgroundColor: 'black'),
-          
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+    return Scaffold(
+      resizeToAvoidBottomInset: true, // Prevent keyboard from causing overflow
+      body: SafeArea(
+        child: PokedexScreenTemplate(
+          backgroundColor: Colors.black,
+          screenContent: Stack(
             children: [
-              SizedBox(
-                height: 350,
-                child: _pokemonList.isEmpty
-                    ? const Center(
-                        child: PokeballLoadingIndicator(size: 200),
-                      ) // Show pokeball loading indicator initially
-                    : ListWheelScrollView.useDelegate(
-                        controller: _scrollController,
-                        physics: _isLoading
-                            ? const NeverScrollableScrollPhysics()
-                            : const FixedExtentScrollPhysics(),
-                        itemExtent: 60,
-                        perspective: 0.002,
-                        diameterRatio: 2.5,
-                        onSelectedItemChanged: (index) {
-                          setState(() {
-                            _currentIndex = index;
-                          });
-                        },
-                        childDelegate: ListWheelChildBuilderDelegate(
-                          childCount:
-                              _pokemonList.length + (_isLoading ? 1 : 0),
-                          builder: (context, index) {
-                            if (index >= _pokemonList.length) {
-                              return const Center(
-                                  child: PokeballLoadingIndicator(size: 50));
-                            }
+              PokeballBackground(backgroundColor: 'black'),
 
-                            double distanceFromCenter =
-                                (_currentIndex - index).abs().toDouble();
-                            double opacity = (1.0 - (distanceFromCenter * 0.3))
-                                .clamp(0.4, 1.0);
-                            double scale = (1.2 - distanceFromCenter * 0.2)
-                                .clamp(0.9, 1.2);
+              Column(
+                children: [
+                  const SizedBox(height: 100), // Ensures space above content
 
-                            return Padding(
-                              padding:
-                                  const EdgeInsets.symmetric(horizontal: 16),
-                              child: Opacity(
-                                opacity: opacity,
-                                child: Transform.scale(
-                                  scale: scale,
-                                  child: SizedBox(
-                                    width: screenWidth * 0.8,
-                                    child: PokemonEntry(
-                                      spriteUrl: _pokemonList[index].spriteUrl,
-                                      pokemonName: _pokemonList[index].name,
-                                      pokemonIndex: _pokemonList[index].id,
-                                      pokemonType: widget.pokemonType,
-                                      onPressed: () {
-                                        Navigator.of(context).push(
-                                          PageRouteBuilder(
-                                            transitionDuration: const Duration(
-                                                milliseconds: 400),
-                                            pageBuilder: (context, animation,
-                                                    secondaryAnimation) =>
-                                                PokemonDisplayScreen(
-                                                    pokemon:
-                                                        _pokemonList[index]),
-                                            transitionsBuilder: (context,
-                                                animation,
-                                                secondaryAnimation,
-                                                child) {
-                                              return SlideTransition(
-                                                position: Tween<Offset>(
-                                                  begin: const Offset(1, 0),
-                                                  end: Offset.zero,
-                                                ).animate(animation),
-                                                child: child,
-                                              );
-                                            },
+                  Expanded(
+                    child: SingleChildScrollView(
+                      physics: const ClampingScrollPhysics(),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          SizedBox(
+                            height: 350,
+                            child: _pokemonList.isEmpty
+                                ? const Center(
+                                    child: PokeballLoadingIndicator(size: 200),
+                                  )
+                                : ListWheelScrollView.useDelegate(
+                                    controller: _scrollController,
+                                    physics: _isLoading
+                                        ? const NeverScrollableScrollPhysics()
+                                        : const FixedExtentScrollPhysics(),
+                                    itemExtent: 60,
+                                    perspective: 0.002,
+                                    diameterRatio: 2.5,
+                                    onSelectedItemChanged: (index) {
+                                      setState(() {
+                                        _currentIndex = index;
+                                      });
+                                    },
+                                    childDelegate:
+                                        ListWheelChildBuilderDelegate(
+                                      childCount: _pokemonList.length +
+                                          (_isLoading ? 1 : 0),
+                                      builder: (context, index) {
+                                        if (index >= _pokemonList.length) {
+                                          return const Center(
+                                              child: PokeballLoadingIndicator(
+                                                  size: 50));
+                                        }
+
+                                        double distanceFromCenter =
+                                            (_currentIndex - index)
+                                                .abs()
+                                                .toDouble();
+                                        double opacity =
+                                            (1.0 - (distanceFromCenter * 0.3))
+                                                .clamp(0.4, 1.0);
+                                        double scale =
+                                            (1.2 - distanceFromCenter * 0.2)
+                                                .clamp(0.9, 1.2);
+
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 16),
+                                          child: Opacity(
+                                            opacity: opacity,
+                                            child: Transform.scale(
+                                              scale: scale,
+                                              child: SizedBox(
+                                                width: screenWidth * 0.8,
+                                                child: PokemonEntry(
+                                                  spriteUrl: _pokemonList[index]
+                                                      .spriteUrl,
+                                                  pokemonName:
+                                                      _pokemonList[index].name,
+                                                  pokemonIndex:
+                                                      _pokemonList[index].id,
+                                                  pokemonType:
+                                                      widget.pokemonType,
+                                                  onPressed: () {
+                                                    Navigator.of(context).push(
+                                                      PageRouteBuilder(
+                                                        transitionDuration:
+                                                            const Duration(
+                                                                milliseconds:
+                                                                    400),
+                                                        pageBuilder: (context,
+                                                                animation,
+                                                                secondaryAnimation) =>
+                                                            PokemonDisplayScreen(
+                                                                pokemon:
+                                                                    _pokemonList[
+                                                                        index]),
+                                                        transitionsBuilder:
+                                                            (context,
+                                                                animation,
+                                                                secondaryAnimation,
+                                                                child) {
+                                                          return SlideTransition(
+                                                            position:
+                                                                Tween<Offset>(
+                                                              begin:
+                                                                  const Offset(
+                                                                      1, 0),
+                                                              end: Offset.zero,
+                                                            ).animate(
+                                                                    animation),
+                                                            child: child,
+                                                          );
+                                                        },
+                                                      ),
+                                                    );
+                                                  },
+                                                ),
+                                              ),
+                                            ),
                                           ),
                                         );
                                       },
                                     ),
                                   ),
+                          ),
+
+                          const SizedBox(height: 20),
+
+                          // SpeakBubble - Prevent Cutting
+                          if (_pokemonList.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(
+                                  bottom: 30), // Ensures bottom space
+                              child: Container(
+                                constraints: const BoxConstraints(
+                                    minHeight: 80), // Ensures visibility
+                                child: SpeakBubble(
+                                  bubbleText:
+                                      _pokemonList[_currentIndex].description,
+                                  highlightWords: [],
                                 ),
                               ),
-                            );
-                          },
-                        ),
+                            ),
+                        ],
                       ),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 20),
-              if (_pokemonList.isNotEmpty)
-                SpeakBubble(
-                  bubbleText: _pokemonList[_currentIndex].description,
-                  highlightWords: [],
+
+              // Search Bar at the Top
+              Positioned(
+                top: 20,
+                left: 16,
+                right: 16,
+                child: PokemonSearchBar(
+                  type: widget.pokemonType,
+                  onSelectPokemon: (selectedPokemon) {
+                    debugPrint("Selected Pokémon: ${selectedPokemon.name}");
+                  },
                 ),
-                
+              ),
             ],
           ),
-            Positioned(
-      top: 16,
-      left: 16,
-      right: 16,
-      child: PokemonSearchBar(        
-        type: widget.pokemonType,  // The chosen Pokémon type
-        onSelectPokemon: (selectedPokemon) {
-          // If you want to navigate externally or do extra logic here:
-          debugPrint("Selected Pokémon: ${selectedPokemon.name}");
-        },
+          hints: [
+            'Tap on a Pokémon to Learn More',
+            'Tap on the Search Bar to Search',
+            'I\'m super sleepy',
+            'Miss being a Kid...',
+            'Pokémon are Soooooo Cool!!'
+          ],
+        ),
       ),
-    ),
-        ],
-      ), hints: ['Tap on a Pokémon to Learn More', 'Tap on the Search Bar to Search', 'I\'n super sleepy','Miss being a Kid...','Pokémon are Soooooo Cool!!'],
     );
   }
 }

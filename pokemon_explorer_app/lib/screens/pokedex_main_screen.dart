@@ -6,7 +6,6 @@ import 'package:pokemon_explorer_app/components/animated_background.dart';
 import 'package:pokemon_explorer_app/components/pokedex_screen_template.dart';
 import 'package:pokemon_explorer_app/components/pokemon_type_grid.dart';
 import 'package:pokemon_explorer_app/components/speak_bubble.dart';
-import 'package:pokemon_explorer_app/components/pokedex_header.dart';
 import 'dart:math' as math;
 import 'package:pokemon_explorer_app/components/pokeball_loading_indicator.dart';
 
